@@ -1,0 +1,16 @@
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+}
+
+.status .ok {
+  color: #16a34a;
+}
+
+.status .bad {
+  color: #dc2626;
+}
