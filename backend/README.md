@@ -29,9 +29,17 @@ Set `DB_NAME`, `DB_USER`, `DB_PASSWORD`, and `ENVIRONMENT` accordingly for each 
 
 ## Deploying on Render
 
-This service deploys from the repo root using `render.yaml` (rootDir: `backend`). Set these env vars in the Render dashboard (not committed to git):
+This service deploys from the repo root using `render.yaml` (rootDir: `backend`), or manually as a Web Service. Start command must be exactly:
+
+```
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+(without `--host 0.0.0.0 --port $PORT`, Render can never detect an open port and the deploy hangs on "No open ports detected").
+
+Set these env vars in the Render dashboard (not committed to git):
 
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
-- `CORS_ORIGINS` — the deployed frontend URL(s), comma-separated
+- `CORS_ORIGINS` — optional; only needed if something calls this API directly instead of going through the frontend's `/api` proxy (see root [`README.md`](../README.md))
 
 Note: `db-3130.cs.dal.ca` may only accept connections from on-campus/VPN IPs. Confirm Render's servers can reach it before relying on this in production.

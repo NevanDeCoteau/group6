@@ -2,6 +2,7 @@ services:
   - type: web
     name: g6-backend
     runtime: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
@@ -18,6 +19,8 @@ services:
         sync: false
       - key: DB_PASSWORD
         sync: false
+      # Optional: only needed if something calls the backend directly
+      # (bypassing the frontend's /api proxy below), e.g. API testing tools.
       - key: CORS_ORIGINS
         sync: false
 
@@ -28,9 +31,14 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
+      # Proxies /api/* to the backend server-side, so the browser sees a
+      # same-origin request. Avoids CORS entirely and keeps working even
+      # when the browser blocks cross-site requests (tracker blockers,
+      # strict privacy modes). Replace the destination with your actual
+      # g6-backend URL.
+      - type: rewrite
+        source: /api/*
+        destination: https://group6-mxtw.onrender.com/:splat
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        sync: false
